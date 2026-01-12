@@ -161,3 +161,66 @@
     {%- endset %}
     {{ return(complete_buckets_cte) }}
 {% endmacro %}
+
+
+
+
+{% macro duckdb__complete_buckets_cte(
+    source_cte,
+    time_column,
+    grain,
+    start_time,
+    end_time
+) %}
+complete_buckets as (
+    select
+        gs.bucket as {{ time_column }}
+    from generate_series(
+        {{ start_time }},
+        {{ end_time }},
+        interval '1 {{ grain }}'
+    ) as gs(bucket)
+)
+{% endmacro %}
+
+
+
+{% macro sqlserver__complete_buckets_cte(
+    time_bucket,
+    bucket_end_expr,
+    min_bucket_start_expr,
+    max_bucket_end_expr
+) %}
+    {%- set complete_buckets_cte %}
+        with buckets as (
+            -- anchor
+            select
+                {{ min_bucket_start_expr }} as edr_bucket_start
+
+            union all
+
+            -- recursive step
+            select
+                dateadd(
+                    {{ time_bucket.period }},
+                    {{ time_bucket.count }},
+                    edr_bucket_start
+                ) as edr_bucket_start
+            from buckets
+            where dateadd(
+                    {{ time_bucket.period }},
+                    {{ time_bucket.count }},
+                    edr_bucket_start
+                ) < {{ max_bucket_end_expr }}
+        )
+        select
+            edr_bucket_start,
+            {{ bucket_end_expr }} as edr_bucket_end
+        from buckets
+        where {{ bucket_end_expr }} <= {{ max_bucket_end_expr }}
+        option (maxrecursion 0)
+    {%- endset %}
+
+    {{ return(complete_buckets_cte) }}
+{% endmacro %}
+

@@ -1,0 +1,29 @@
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: elementary_sqlserver
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: StrongP@ssw0rd123
+      MSSQL_PID: Express
+    ports:
+      - "1433:1433"
+    command: >
+      bash -c "
+      /opt/mssql/bin/sqlservr &
+      echo 'Waiting for SQL Server to start...'
+      until /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P StrongP@ssw0rd123 -Q 'SELECT 1' -C > /dev/null 2>&1; do
+        sleep 1
+      done
+      echo 'Creating database...'
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P StrongP@ssw0rd123 -Q 'CREATE DATABASE dbt;' -C
+      echo 'Database created.'
+      wait
+      "
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P StrongP@ssw0rd123 -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+

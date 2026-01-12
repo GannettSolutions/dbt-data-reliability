@@ -50,3 +50,18 @@
     {% endif %}
   {% endfor %}
 {% endmacro %}
+
+
+
+
+{% macro sqlserver__create_indexes(indexes, relation) %}
+    {% for index in indexes %}
+        create index {{ index.name }}
+        on {{ relation }} (
+            {% for column in index.columns %}
+                {{ column }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        );
+    {% endfor %}
+{% endmacro %}
+

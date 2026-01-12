@@ -38,3 +38,21 @@
     {% endif %}
     {{ return([none, none]) }}
 {% endmacro %}
+
+
+
+
+
+{% macro sqlserver__get_package_database_and_schema(package_name='elementary') %}
+    {{ return(elementary.default__get_package_database_and_schema(package_name)) }}
+{% endmacro %}
+
+{% macro duckdb__get_package_database_and_schema(package_name='elementary') %}
+    {# 
+       In some DuckDB configurations, database and schema might be the same 
+       identifier if not explicitly using multiple attached databases.
+       But the default logic is the most robust for standard dbt-duckdb use.
+    #}
+    {{ return(elementary.default__get_package_database_and_schema(package_name)) }}
+{% endmacro %}
+

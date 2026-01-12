@@ -163,7 +163,24 @@
     {{- return(string_value | replace("'", "''")) -}}
 {%- endmacro -%}
 
-{%- macro render_value(value, data_type) -%}
+{% macro sqlserver__escape_special_chars(s) %}
+{# SQL Server does NOT support backslash escaping (\' \n \r). 
+    Strings must be escaped using quote doubling only. #}
+
+    {%- if s is string -%}
+        {{ return(s.replace("'", "''")) }}
+    {%- else -%}
+        {{ return(s) }}
+    {%- endif -%}
+{% endmacro %}
+
+{% macro render_value(value, data_type) %}
+  {{ adapter.dispatch('render_value', 'elementary')(value, data_type) }}
+{% endmacro %}
+
+
+
+{%- macro default__render_value(value, data_type) -%}
     {%- if value is defined and value is not none -%}
         {%- if value is number -%}
             {{- value -}}
@@ -180,3 +197,14 @@
         NULL
     {%- endif -%}
 {%- endmacro -%}
+
+{%- macro sqlserver__render_value(value, data_type) -%}
+  {%- if value is boolean  -%}
+    {{- 1 if value else 0 -}}
+  {%- else -%}
+    {{ elementary.default__render_value(value, data_type) }}
+  {%- endif -%}
+{%- endmacro -%}
+
+
+

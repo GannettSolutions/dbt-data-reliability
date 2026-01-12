@@ -78,3 +78,24 @@
     -- Dremio CURRENT_TIMESTAMP() is always in UTC
     CURRENT_TIMESTAMP()
 {%- endmacro -%}
+
+
+
+{% macro sqlserver__edr_current_timestamp() -%}
+    CURRENT_TIMESTAMP
+{%- endmacro -%}
+
+{% macro sqlserver__edr_current_timestamp_in_utc() -%}
+    GETUTCDATE()
+{%- endmacro -%}
+
+
+{% macro duckdb__edr_current_timestamp() -%}
+    current_timestamp()
+{%- endmacro -%}
+
+{% macro duckdb__edr_current_timestamp_in_utc() -%}
+    cast(current_timestamp at time zone 'UTC' as timestamp)
+{%- endmacro -%}
+
+

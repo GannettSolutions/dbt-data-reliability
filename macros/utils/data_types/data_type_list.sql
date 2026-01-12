@@ -171,3 +171,52 @@
     {%- endif %}
 
 {% endmacro %}
+
+
+
+{% macro duckdb__data_type_list(data_type) %}
+
+    {% set string_list = ['VARCHAR', 'CHAR', 'BPCHAR', 'STRING', 'TEXT'] | list %}
+    {% set numeric_list = ['INTEGER', 'BIGINT', 'SMALLINT', 'TINYINT', 'HUGEINT', 'USMALLINT', 'UINTEGER', 'UBIGINT', 'UTINYINT', 'FLOAT', 'DOUBLE', 'DECIMAL', 'REAL'] | list %}
+    {% set timestamp_list = ['DATE', 'TIMESTAMP', 'TIMESTAMPTZ', 'TIMESTAMP WITH TIME ZONE'] | list %}
+    {% set boolean_list = ["BOOLEAN", "BOOL"] | list %}
+
+    {%- if data_type == 'string' %}
+        {{ return(string_list) }}
+    {%- elif data_type == 'numeric' %}
+        {{ return(numeric_list) }}
+    {%- elif data_type == 'timestamp' %}
+        {{ return(timestamp_list) }}
+    {%- elif data_type == "boolean" %}
+        {{ return(boolean_list) }}
+    {%- else %}
+        {{ return([]) }}
+    {%- endif %}
+
+{% endmacro %}
+
+
+{% macro sqlserver__data_type_list(data_type) %}
+
+    {% set string_list = ['varchar', 'nvarchar', 'char', 'nchar', 'text', 'ntext'] | list %}
+    {% set numeric_list = ['int', 'bigint', 'smallint', 'tinyint', 'decimal', 'numeric', 'float', 'real', 'money', 'smallmoney'] | list %}
+    {% set timestamp_list = ['date', 'datetime', 'datetime2', 'datetimeoffset', 'smalldatetime'] | list %}
+    {% set boolean_list = ['bit'] | list %}
+
+    {%- if data_type == 'string' %}
+        {{ return(string_list) }}
+    {%- elif data_type == 'numeric' %}
+        {{ return(numeric_list) }}
+    {%- elif data_type == 'timestamp' %}
+        {{ return(timestamp_list) }}
+    {%- elif data_type == "boolean" %}
+        {{ return(boolean_list) }}
+    {%- else %}
+        {{ return([]) }}
+    {%- endif %}
+
+{% endmacro %}
+
+
+
+

@@ -160,3 +160,26 @@
 {% macro dremio__edr_type_timestamp() %}
     timestamp
 {% endmacro %}
+
+
+
+{# SQL SERVER TYPES #}
+{% macro sqlserver__edr_type_bool() %} bit {% endmacro %}
+{% macro sqlserver__edr_type_string() %} nvarchar(4000) {% endmacro %}
+{% macro sqlserver__edr_type_long_string() %} nvarchar(4000) {% endmacro %}
+{% macro sqlserver__edr_type_timestamp() %} datetime2 {% endmacro %}
+{% macro sqlserver__edr_type_date() %} date {% endmacro %}
+{% macro sqlserver__edr_type_int() %} int {% endmacro %}
+{% macro sqlserver__edr_type_bigint() %} bigint {% endmacro %}
+{% macro sqlserver__edr_type_float() %} float {% endmacro %}
+
+{# DUCKDB TYPES #}
+{% macro duckdb__edr_type_bool() %} boolean {% endmacro %}
+{% macro duckdb__edr_type_string() %} text {% endmacro %}
+{% macro duckdb__edr_type_long_string() %} text {% endmacro %}
+{% macro duckdb__edr_type_timestamp() %} timestamp {% endmacro %}
+{% macro duckdb__edr_type_date() %} date {% endmacro %}
+{% macro duckdb__edr_type_int() %} integer {% endmacro %}
+{% macro duckdb__edr_type_bigint() %} bigint {% endmacro %}
+{% macro duckdb__edr_type_float() %} double {% endmacro %}
+

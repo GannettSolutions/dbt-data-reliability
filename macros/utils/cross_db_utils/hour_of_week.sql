@@ -38,3 +38,19 @@
 {% macro trino__edr_hour_of_week_expression(date_expr) %}
     date_format({{ date_expr }}, '%W%H')
 {% endmacro %}
+
+
+{% macro sqlserver__edr_hour_of_week_expression(date_expr) %}
+    concat(
+        datename(weekday, {{ date_expr }}),
+        cast(datepart(hour, {{ date_expr }}) as {{ elementary.edr_type_string() }})
+    )
+{% endmacro %}
+
+{% macro duckdb__edr_hour_of_week_expression(date_expr) %}
+    concat(
+        strftime({{ date_expr }}, '%A'),
+        cast(extract(hour from {{ date_expr }}) as {{ elementary.edr_type_string() }})
+    )
+{% endmacro %}
+

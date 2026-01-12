@@ -56,3 +56,29 @@
 {% macro sum(column_name) -%}
     sum(cast({{ column_name }} as {{ elementary.edr_type_float() }}))
 {%- endmacro %}
+
+
+
+
+
+{# SQL Server Statistics Functions #}
+{% macro sqlserver__standard_deviation(column_name) -%}
+    stdev(cast({{ column_name }} as {{ elementary.edr_type_float() }}))
+{%- endmacro %}
+
+{% macro sqlserver__variance(column_name) -%}
+    var(cast({{ column_name }} as {{ elementary.edr_type_float() }}))
+{%- endmacro %}
+
+
+
+
+
+{% macro duckdb__standard_deviation(column_name) -%}
+    stddev_samp(cast({{ column_name }} as {{ elementary.edr_type_float() }}))
+{%- endmacro %}
+
+{% macro duckdb__variance(column_name) -%}
+    var_samp(cast({{ column_name }} as {{ elementary.edr_type_float() }}))
+{%- endmacro %}
+

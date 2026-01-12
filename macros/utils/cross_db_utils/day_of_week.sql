@@ -44,3 +44,13 @@
 {% macro dremio__edr_day_of_week_expression(date_expr) %}
     TO_CHAR({{ date_expr }}, 'DAY')
 {% endmacro %}
+
+
+{% macro sqlserver__edr_day_of_week_expression(date_expr) %}
+    datename(weekday, {{ date_expr }})
+{% endmacro %}
+
+{% macro duckdb__edr_day_of_week_expression(date_expr) %}
+    strftime({{ date_expr }}, '%A')
+{% endmacro %}
+

@@ -104,3 +104,22 @@
 {%- macro redshift__const_as_text(string) -%}
     '{{ string }}'::text
 {%- endmacro -%}
+
+
+
+{% macro sqlserver__edr_cast_as_bool(column) %}
+
+    {{ log(
+        "sqlserver__edr_cast_as_bool called with column expression: " ~ column,
+        info=True
+    ) }}
+
+    case
+        when {{ column }} in (1, '1', 'true', 'True', 'TRUE') then 1
+        when {{ column }} in (0, '0', 'false', 'False', 'FALSE') then 0
+        else 0
+    end
+
+{% endmacro %}
+
+

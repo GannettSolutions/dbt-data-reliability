@@ -145,3 +145,63 @@
         ('table_name', 'string'),
     ]) }}
 {% endmacro %}
+
+
+
+
+
+
+{% macro sqlserver__get_tables_from_information_schema(schema_tuple) %}
+    {%- set database_name, schema_name = schema_tuple %}
+
+    with information_schema_tables as (
+
+        select
+            upper(table_catalog) as database_name,
+            upper(table_schema) as schema_name,
+            upper(table_name) as table_name
+        from information_schema.tables
+            where upper(table_schema) = upper('{{ schema_name }}') 
+            and upper(table_catalog) = upper('{{ database_name }}')
+
+    )
+
+    select
+        {{ elementary.full_table_name() }} as full_table_name,
+        upper(database_name + '.' + schema_name) as full_schema_name,
+        database_name,
+        schema_name,
+        table_name
+    from information_schema_tables
+{% endmacro %}
+
+
+
+{% macro duckdb__get_tables_from_information_schema(schema_tuple) %}
+    {%- set database_name, schema_name = schema_tuple %}
+
+    with information_schema_tables as (
+
+        select
+            upper(table_catalog) as database_name,
+            upper(table_schema) as schema_name,
+            upper(table_name) as table_name
+        from information_schema.tables
+            where upper(table_schema) = upper('{{ schema_name }}') 
+            {# In DuckDB, table_catalog represents the database name (e.g. 'memory' or 'main') #}
+            and upper(table_catalog) = upper('{{ database_name }}')
+
+    )
+
+    select
+        {{ elementary.full_table_name() }} as full_table_name,
+        upper(database_name || '.' || schema_name) as full_schema_name,
+        database_name,
+        schema_name,
+        table_name
+    from information_schema_tables
+{% endmacro %}
+
+
+
+

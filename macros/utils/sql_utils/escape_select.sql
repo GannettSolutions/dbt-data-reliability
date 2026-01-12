@@ -13,3 +13,6 @@
 {% macro dremio__escape_select(column_names) %}
     {% do return('\"' + column_names | join('\", \"') + '\"') %}
 {% endmacro %}
+
+
+

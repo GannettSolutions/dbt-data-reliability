@@ -123,3 +123,26 @@
 
     {{- return(default_config) -}}
 {%- endmacro -%}
+
+
+{%- macro sqlserver__get_default_config() -%}
+    {% set default_config = elementary.default__get_default_config() %}
+    {% do default_config.update({'dbt_artifacts_chunk_size': 1000}) %}
+
+    {{- return(default_config) -}}
+{%- endmacro -%}
+
+
+{% macro sqlserver__get_config_var(var_name) %}
+  {% set var_value = elementary.default__get_config_var(var_name) %}
+  {% if var_value is boolean %}
+    {% if var_value %}
+      {% do return(1) %}
+    {% else %}
+      {% do return(0) %}
+    {% endif %}
+  {% endif %}
+  {% do return(var_value) %}
+{% endmacro %}
+
+

@@ -51,3 +51,49 @@
   {%- endfor -%}
   {{ hash_macro(concat_macro(field_sqls)) }}
 {%- endmacro -%}
+
+
+
+{%- macro sqlserver__generate_surrogate_key(fields) -%}
+  {% set default_null_value = "" %}
+  {%- set field_sqls = [] -%}
+
+  {%- for field in fields -%}
+    {%- do field_sqls.append(
+        "coalesce(cast(" ~ field ~ " as varchar(max)), '" ~ default_null_value ~ "')"
+    ) -%}
+    {%- if not loop.last -%}
+      {%- do field_sqls.append("'-'") -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {{ return(
+    "convert(varchar(32), hashbytes('MD5', " ~
+    (dbt.concat or dbt_utils.concat)(field_sqls) ~
+    "), 2)"
+  ) }}
+{%- endmacro -%}
+
+
+
+
+{%- macro duckdb__generate_surrogate_key(fields) -%}
+  {% set default_null_value = "" %}
+  {%- set field_sqls = [] -%}
+
+  {%- for field in fields -%}
+    {%- do field_sqls.append(
+        "coalesce(cast(" ~ field ~ " as varchar), '" ~ default_null_value ~ "')"
+    ) -%}
+    {%- if not loop.last -%}
+      {%- do field_sqls.append("'-'") -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {{ return(
+    "md5(" ~ (dbt.concat or dbt_utils.concat)(field_sqls) ~ ")"
+  ) }}
+{%- endmacro -%}
+
+
+

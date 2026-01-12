@@ -14,3 +14,30 @@
 {% macro spark__edr_to_char(column, format) %}
     date_format({{ column }} {%- if format %}, '{{ format }}'){%- else %}, 'YYYY-MM-DD HH:MI:SS'){%- endif %}
 {% endmacro %}
+
+
+{% macro sqlserver__edr_to_char(column, format) %}
+    {% if format %}
+        {{ return(
+            "format(" ~ column ~ ", '" ~ format ~ "')"
+        ) }}
+    {% else %}
+        {{ return(
+            "format(cast(" ~ column ~ " as datetime), 'yyyy-MM-dd HH:mm:ss')"
+        ) }}
+    {% endif %}
+{% endmacro %}
+
+
+{% macro duckdb__edr_to_char(column, format) %}
+    {% if format %}
+        {{ return(
+            "strftime(" ~ column ~ ", '" ~ format ~ "')"
+        ) }}
+    {% else %}
+        {{ return(
+            "strftime(" ~ column ~ ", '%Y-%m-%d %H:%M:%S')"
+        ) }}
+    {% endif %}
+{% endmacro %}
+

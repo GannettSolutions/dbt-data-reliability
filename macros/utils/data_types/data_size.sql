@@ -21,3 +21,10 @@
 {% macro redshift__get_column_size() %}
   {{ return(65535) }}
 {% endmacro %}
+
+
+{% macro sqlserver__get_column_size() %}
+    {# We set this to 4000 to match the NVARCHAR(4000) limit we set earlier #}
+    {{ return(4000) }}
+{% endmacro %}
+

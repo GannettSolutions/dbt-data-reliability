@@ -22,3 +22,21 @@
 {% macro postgres__try_cast_column_to_timestamp(table_relation, timestamp_column) %}
     {{ return(false) }}
 {% endmacro %}
+
+
+
+{% macro sqlserver__try_cast_column_to_timestamp(table_relation, timestamp_column) %}
+    {# SQL Server uses TOP 1 instead of LIMIT 1 #}
+    {% set query %}
+        select top 1 {{ elementary.edr_safe_cast(timestamp_column, elementary.edr_type_timestamp()) }} as timestamp_column
+        from {{ table_relation }}
+        where {{ timestamp_column }} is not null
+    {% endset %}
+
+    {% set result = elementary.result_value(query) %}
+    {% if result is not none %}
+        {{ return(true) }}
+    {% endif %}
+    {{ return(false) }}
+{% endmacro %}
+

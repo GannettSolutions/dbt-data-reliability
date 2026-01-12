@@ -1,3 +1,4 @@
+
 {% macro get_compiled_code(node, as_column_value=false) %}
     {% set compiled_code = adapter.dispatch("get_compiled_code", "elementary")(node) %}
     
@@ -25,3 +26,15 @@
 {% macro get_compiled_code_too_long_err_msg() %}
     {% do return("Compiled code is too long.") %}
 {% endmacro %}
+
+
+{% macro sqlserver__get_compiled_code(node) %}
+    {% set compiled_code = node.get('compiled_code') or node.get('compiled_sql') %}
+    {% if not compiled_code %}
+        {% do return(none) %}
+    {% else %}
+        {# Escape percent signs to avoid issues with some SQL Server drivers #}
+        {% do return(compiled_code.replace("%", "%%")) %}
+    {% endif %}
+{% endmacro %}
+

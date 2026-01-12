@@ -120,7 +120,16 @@
   {% do return(new_sql) %}
 {% endmacro %}
 
+
+
+
 {% macro query_test_result_rows(sample_limit=none, ignore_passed_tests=false) %}
+  {{ return(adapter.dispatch('query_test_result_rows', 'elementary')(sample_limit, ignore_passed_tests)) }}
+{% endmacro %}
+
+
+
+{% macro default__query_test_result_rows(sample_limit=none, ignore_passed_tests=false) %}
   {% if sample_limit == 0 %} {# performance: no need to run a sql query that we know returns an empty list #}
     {% do return([]) %}
   {% endif %}
@@ -137,6 +146,39 @@
   {% endset %}
   {% do return(elementary.agate_to_dicts(elementary.run_query(query))) %}
 {% endmacro %}
+
+
+
+
+{% macro sqlserver__query_test_result_rows(sample_limit=none, ignore_passed_tests=false) %}
+  {% if sample_limit == 0 %}
+    {% do return([]) %}
+  {% endif %}
+  {% if ignore_passed_tests and elementary.did_test_pass() %}
+    {% do return([]) %}
+  {% endif %}
+
+  {% set query %}
+    with test_results as (
+      {{ sql }}
+    )
+    select {% if sample_limit is not none %} top {{ sample_limit }} {% endif %} * from test_results 
+  {% endset %}
+  {% do return(elementary.agate_to_dicts(elementary.run_query(query))) %}
+{% endmacro %}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 {% macro get_columns_to_exclude_from_sampling(flattened_test) %}
   {% set columns_to_exclude = [] %}
@@ -213,3 +255,18 @@
 {% macro cache_elementary_test_results_rows(elementary_test_results_rows) %}
   {% do elementary.get_cache("elementary_test_results").update({model.unique_id: elementary_test_results_rows}) %}
 {% endmacro %}
+
+
+
+{% materialization test, adapter="sqlserver" %}
+  {%- if dbt.materialization_test_sqlserver -%}
+    {% set materialization_macro = dbt.materialization_test_sqlserver %}
+  {%- else -%}
+    {% set materialization_macro = dbt.materialization_test_default %}
+  {%- endif -%}
+  {% set result = elementary.materialize_test(materialization_macro) %}
+  {% do return(result) %}
+{% endmaterialization %}
+
+
+

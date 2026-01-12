@@ -116,7 +116,13 @@
 {% endmacro %}
 
 
+{# not needed? #}
 {% macro empty_table(column_name_and_type_list) %}
+  {{ return(adapter.dispatch('empty_table', 'elementary')(column_name_and_type_list)) }}
+{% endmacro %}
+
+
+{% macro default__empty_table(column_name_and_type_list) %}
 
     {%- set empty_table_query -%}
         select * from (
@@ -132,8 +138,44 @@
 
 {% endmacro %}
 
-
 {% macro empty_column(column_name, data_type) %}
+  {{ return(adapter.dispatch('empty_column', 'elementary')(column_name, data_type)) }}
+{% endmacro %}
+
+
+{% macro default__empty_column(column_name, data_type) %}
+
+    {%- set dummy_values = elementary.dummy_values() %}
+
+    {%- set column_name = elementary.escape_reserved_keywords(column_name) %}
+
+    {%- if data_type == 'boolean' %}
+        cast ({{ dummy_values['boolean'] }} as {{ elementary.edr_type_bool()}}) as {{ column_name }}
+    {%- elif data_type == 'timestamp' -%}
+        cast('{{ dummy_values['timestamp'] }}' as {{ elementary.edr_type_timestamp() }}) as {{ column_name }}
+    {%- elif data_type == 'int' %}
+        cast({{ dummy_values['int'] }} as {{ elementary.edr_type_int() }}) as {{ column_name }}
+    {%- elif data_type == 'bigint' %}
+        cast({{ dummy_values['bigint'] }} as {{ elementary.edr_type_bigint() }}) as {{ column_name }}
+    {%- elif data_type == 'float' %}
+        cast({{ dummy_values['float'] }} as {{ elementary.edr_type_float() }}) as {{ column_name }}
+    {%- elif data_type == 'long_string' %}
+        cast('{{ dummy_values['long_string'] }}' as {{ elementary.edr_type_long_string() }}) as {{ column_name }}
+    {%- elif data_type == 'nullable(string)' %}
+        cast('{{ dummy_values['string'] }}' as Nullable({{ elementary.edr_type_string() }})) as {{ column_name }}
+    {%- elif data_type == 'nullable(timestamp)' -%}
+        cast('{{ dummy_values['timestamp'] }}' as Nullable({{ elementary.edr_type_timestamp() }})) as {{ column_name }}
+    {%- elif data_type == 'nullable(float)' -%}
+        cast({{ dummy_values['float'] }} as Nullable({{ elementary.edr_type_float() }})) as {{ column_name }}
+    {%- elif data_type == 'nullable(int)' -%}
+        cast({{ dummy_values['int'] }} as Nullable({{ elementary.edr_type_int() }})) as {{ column_name }}
+    {%- else %}
+        cast('{{ dummy_values['string'] }}' as {{ elementary.edr_type_string() }}) as {{ column_name }}
+    {%- endif %}
+
+{% endmacro %}
+
+{% macro sqlserver__empty_column(column_name, data_type) %}
 
     {%- set dummy_values = elementary.dummy_values() %}
 
@@ -166,7 +208,13 @@
 {% endmacro %}
 
 
+
 {% macro dummy_values() %}
+    {{ return(adapter.dispatch('dummy_values', 'elementary')()) }}
+{% endmacro %}
+
+
+{% macro default__dummy_values() %}
 
     {%- set dummy_values = {
      'string': "dummy_string",
@@ -181,3 +229,23 @@
     {{ return(dummy_values) }}
 
 {% endmacro %}
+
+
+
+{% macro sqlserver__dummy_values() %}
+
+    {%- set dummy_values = {
+     'string': "dummy_string",
+     'long_string': "this_is_just_a_long_dummy_string",
+     'boolean': 1,
+     'int': 123456789,
+     'bigint': 31474836478,
+     'float': 123456789.99,
+     'timestamp': "2091-02-17"
+    } %}
+
+    {{ return(dummy_values) }}
+
+{% endmacro %}
+
+

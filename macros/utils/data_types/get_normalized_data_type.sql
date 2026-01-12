@@ -114,3 +114,33 @@
    {{return (exact_data_type) }}
  {%- endif%}
 {% endmacro %}
+
+
+
+
+
+{% macro sqlserver__get_normalized_data_type(exact_data_type) %}
+    {# Map SQL Server specific types to standard Elementary types #}
+    {% set exact_data_type_to_data_type_returned_by_the_info_schema = {
+        'BIT': 'BOOLEAN',
+        'INT': 'INTEGER',
+        'SMALLINT': 'INTEGER',
+        'TINYINT': 'INTEGER',
+        'BIGINT': 'INTEGER',
+        'NUMERIC': 'DECIMAL',
+        'REAL': 'FLOAT',
+        'MONEY': 'DECIMAL',
+        'SMALLMONEY': 'DECIMAL',
+        'NVARCHAR': 'VARCHAR',
+        'NCHAR': 'CHAR',
+        'NTEXT': 'TEXT',
+        'DATETIME2': 'DATETIME'
+    } %}
+    
+    {% if exact_data_type in exact_data_type_to_data_type_returned_by_the_info_schema %}
+        {{ return(exact_data_type_to_data_type_returned_by_the_info_schema[exact_data_type]) }}
+    {% else %}
+        {{ return(exact_data_type) }}
+    {% endif %}
+{% endmacro %}
+

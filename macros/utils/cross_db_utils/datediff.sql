@@ -195,3 +195,45 @@
         {% do exceptions.raise_compiler_error('Unsupported date part: ' ~ date_part) %}
     {% endif %}
 {% endmacro %}
+
+
+
+{% macro sqlserver__edr_datediff(first_date, second_date, date_part) %}
+    {% set date_part = date_part | lower %}
+
+    {% set supported_parts = [
+        'year',
+        'quarter',
+        'month',
+        'day',
+        'hour',
+        'minute',
+        'second',
+        'millisecond'
+    ] %}
+
+    {% if date_part not in supported_parts %}
+        {{ exceptions.raise_compiler_error(
+            "Unsupported date_part for sqlserver in edr_datediff: " ~ date_part
+        ) }}
+    {% endif %}
+
+    {% set first_expr = "cast(" ~ first_date ~ " as datetime2)" %}
+    {% set second_expr = "cast(" ~ second_date ~ " as datetime2)" %}
+
+    {{ return(
+        "datediff(" ~ date_part ~ ", " ~ first_expr ~ ", " ~ second_expr ~ ")"
+    ) }}
+{% endmacro %}
+
+
+
+
+{% macro duckdb__edr_datediff(first_date, second_date, date_part) %}
+    {{ return(
+        "date_diff('" ~ date_part ~ "', " ~ first_date ~ ", " ~ second_date ~ ")"
+    ) }}
+{% endmacro %}
+
+
+

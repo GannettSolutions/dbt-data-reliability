@@ -208,7 +208,27 @@
                 first_value(case when not should_exclude_from_training then bucket_end end) over (partition by {{ partition_by_keys }} order by bucket_end asc rows between unbounded preceding and current row) as training_start
             from grouped_metrics
             where not is_excluded
-            {{ dbt_utils.group_by(14) }}
+            {% if target.type == 'sqlserver' %}
+            group by 
+                metric_id,
+                full_table_name,
+                column_name,
+                dimension,
+                dimension_value,
+                metric_name,
+                metric_value,
+                source_value,
+                bucket_start,
+                bucket_end,
+                bucket_seasonality,
+                bucket_duration_hours,
+                updated_at,
+                should_exclude_from_training,
+                avg(case when not should_exclude_from_training then metric_value end) over (partition by {{ partition_by_keys }} order by bucket_end asc rows between unbounded preceding and current row)
+
+            {% else %}
+                {{ dbt_utils.group_by(14) }}
+            {% endif %}
         ),
 
         anomaly_scores as (

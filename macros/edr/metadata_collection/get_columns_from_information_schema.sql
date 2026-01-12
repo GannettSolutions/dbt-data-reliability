@@ -96,3 +96,46 @@
 {% macro trino__get_columns_from_information_schema(database_name, schema_name, table_name = none) %}
     {{ elementary.get_empty_columns_from_information_schema_table() }}
 {% endmacro %}
+
+
+
+{% macro sqlserver__get_columns_from_information_schema(schema_tuple) %}
+    {%- set database_name, schema_name = schema_tuple %}
+
+    select
+        upper(table_catalog) as database_name,
+        upper(table_schema) as schema_name,
+        upper(table_name) as table_name,
+        upper(column_name) as column_name,
+        data_type,
+        character_maximum_length,
+        numeric_precision,
+        numeric_scale,
+        is_nullable
+    from information_schema.columns
+    where upper(table_schema) = upper('{{ schema_name }}')
+      and upper(table_catalog) = upper('{{ database_name }}')
+{% endmacro %}
+
+
+
+{% macro duckdb__get_columns_from_information_schema(schema_tuple) %}
+    {%- set database_name, schema_name = schema_tuple %}
+
+    select
+        upper(table_catalog) as database_name,
+        upper(table_schema) as schema_name,
+        upper(table_name) as table_name,
+        upper(column_name) as column_name,
+        data_type,
+        character_maximum_length,
+        numeric_precision,
+        numeric_scale,
+        is_nullable
+    from information_schema.columns
+    where upper(table_schema) = upper('{{ schema_name }}')
+      and upper(table_catalog) = upper('{{ database_name }}')
+{% endmacro %}
+
+
+

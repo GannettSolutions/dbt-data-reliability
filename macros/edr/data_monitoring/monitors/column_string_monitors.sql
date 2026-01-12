@@ -21,3 +21,21 @@
 {% macro not_missing_percent(column_name) %}
     {{ elementary.edr_not_percent(elementary.missing_count(column_name), elementary.row_count()) }}
 {% endmacro %}
+
+
+
+
+
+{# SQL Server uses LEN() instead of LENGTH() #}
+{% macro sqlserver__max_length(column_name) -%}
+    max(len({{ column_name }}))
+{%- endmacro %}
+
+{% macro sqlserver__min_length(column_name) -%}
+    min(len({{ column_name }}))
+{%- endmacro %}
+
+{% macro sqlserver__average_length(column_name) -%}
+    avg(cast(len({{ column_name }}) as {{ elementary.edr_type_float() }}))
+{%- endmacro %}
+

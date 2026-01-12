@@ -13,3 +13,15 @@
 {% macro spark__edr_safe_cast(field, type) %}
     try_cast({{field}} as {{type}})
 {% endmacro %}
+
+
+{# TODO: may need to evaluate datatypes??? MSG #}
+
+{% macro sqlserver__edr_safe_cast(field, type) %}
+    try_cast({{ field }} as {{ type }})
+{% endmacro %}
+
+{% macro duckdb__edr_safe_cast(field, type) %}
+    try_cast({{ field }} as {{ type }})
+{% endmacro %}
+

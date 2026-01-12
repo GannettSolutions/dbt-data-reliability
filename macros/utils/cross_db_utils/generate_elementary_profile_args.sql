@@ -196,3 +196,35 @@
 {% macro default__generate_elementary_profile_args(method, elementary_database, elementary_schema) %}
 Adapter "{{ target.type }}" is not supported on Elementary.
 {% endmacro %}
+
+
+
+
+{% macro sqlserver__generate_elementary_profile_args(method, elementary_database, elementary_schema) %}
+  {% do return([
+    _parameter("type", target.type),
+    _parameter("server", target.host),
+    _parameter("port", target.port),
+    _parameter("database", elementary_database),
+    _parameter("schema", elementary_schema),
+    _parameter("user", target.user),
+    _parameter("password", "<PASSWORD>"),
+    _parameter("driver", "ODBC Driver 17 for SQL Server"),
+    _parameter("encrypt", true),
+    _parameter("trust_cert", false),
+    _parameter("threads", target.threads),
+  ]) %}
+{% endmacro %}
+
+
+
+
+{% macro duckdb__generate_elementary_profile_args(method, elementary_database, elementary_schema) %}
+  {% do return([
+    _parameter("type", target.type),
+    _parameter("path", target.path or "<DUCKDB_FILE_PATH>"),
+    _parameter("schema", elementary_schema),
+    _parameter("threads", target.threads),
+  ]) %}
+{% endmacro %}
+

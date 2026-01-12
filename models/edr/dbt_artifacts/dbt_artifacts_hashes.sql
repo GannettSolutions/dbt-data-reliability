@@ -24,4 +24,10 @@ select
 from {{ ref(artifact_model) }}
 {% if not loop.last %} union all {% endif %}
 {% endfor %}
+
+{% if target.type == 'sqlserver' %}
+-- do nothing, sqlserver does not use order by in views
+{% else %}
 order by metadata_hash
+{% endif %}
+

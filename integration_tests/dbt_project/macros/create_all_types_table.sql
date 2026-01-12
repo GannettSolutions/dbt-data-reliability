@@ -217,3 +217,36 @@
     {% do elementary.edr_log(unmatched_types) %}
     {% do return(unmatched_types) %}
 {% endmacro %}
+
+
+
+
+{% macro sqlserver__create_all_types_table() %}
+  {% set database_name, schema_name = elementary.get_package_database_and_schema('elementary') %}
+  {% set _, relation = dbt.get_or_create_relation(database=database_name, schema=schema_name, identifier='all_types', type="table") %}
+  {% set sql_query %}
+    select
+      cast(1 as BIGINT) as bigint_col,
+      cast(1 as INT) as int_col,
+      cast(1 as SMALLINT) as smallint_col,
+      cast(1 as TINYINT) as tinyint_col,
+      cast(1 as BIT) as bit_col,
+      cast(1 as BIT) as bool_col,
+      cast(1.23 as DECIMAL(10,2)) as decimal_col,
+      cast(1.23 as NUMERIC(10,2)) as numeric_col,
+      cast(1.23 as FLOAT) as float_col,
+      cast(1.23 as REAL) as real_col,
+      'str' as varchar_col,
+      N'str' as nvarchar_col,
+      'a' as char_col,
+      N'a' as nchar_col,
+      'text' as text_col,
+      cast('2023-10-23' as DATE) as date_col,
+      cast('12:00:00' as TIME) as time_col,
+      cast('2023-10-23 12:00:00' as DATETIME) as datetime_col,
+      cast('2023-10-23 12:00:00' as DATETIME2) as datetime2_col
+  {% endset %}
+  {% do elementary.edr_create_table_as(false, relation, sql_query) %}
+{% endmacro %}
+
+

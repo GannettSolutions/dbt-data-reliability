@@ -10,3 +10,11 @@
 {% macro bigquery__edr_time_trunc(date_part, date_expression) %}
     timestamp_trunc(cast({{ date_expression }} as timestamp), {{ date_part }})
 {% endmacro %}
+
+{% macro sqlserver__edr_time_trunc(date_part, date_expression) %}
+    {% set date_part = date_part | lower %}
+    {% set base = "CAST('19000101' AS datetime2(7))" %}
+    {% set expr = "CAST(" ~ date_expression ~ " AS datetime2(7))" %}
+    DATEADD({{ date_part }}, DATEDIFF({{ date_part }}, {{ base }}, {{ expr }}), {{ base }})
+{% endmacro %}
+
