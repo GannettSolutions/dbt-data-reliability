@@ -43,4 +43,4 @@ select
   results.{{ elementary.escape_reserved_keywords('filter') }} as freshness_filter
 from results
 join sources on results.unique_id = sources.unique_id
-where {{ not elementary.get_config_var('disable_source_freshness_alerts') }} and lower(status) != 'pass'
+where {{ elementary.boolean_predicate(not elementary.get_config_var('disable_source_freshness_alerts')) }} and lower(status) != 'pass'
