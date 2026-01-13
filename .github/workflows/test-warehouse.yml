@@ -1,37 +1,38 @@
 name: Test warehouse platform
 on:
-  workflow_dispatch:
-    inputs:
-      warehouse-type:
-        type: choice
-        required: true
-        description: Type of warehouse platform
-        options:
-          - postgres
-          - snowflake
-          - bigquery
-          - redshift
-          - databricks_catalog
-          - spark
-          - athena
-          - trino
-          - clickhouse
-          - dremio
-      elementary-ref:
-        type: string
-        required: false
-        description: Branch or tag to checkout for 'elementary' repository
-      dbt-data-reliability-ref:
-        type: string
-        required: false
-        description: Branch or tag to checkout for 'dbt-data-reliability' repository
-      dbt-version:
+   workflow_dispatch:
+     inputs:
+       warehouse-type:
+         type: choice
+         required: true
+         description: Type of warehouse platform
+         options:
+           - postgres
+           - sqlserver
+           - snowflake
+           - bigquery
+           - redshift
+           - databricks_catalog
+           - spark
+           - athena
+           - trino
+           - clickhouse
+           - dremio
+       elementary-ref:
+         type: string
+         required: false
+         description: Branch or tag to checkout for 'elementary' repository
+       dbt-data-reliability-ref:
+         type: string
+         required: false
+         description: Branch or tag to checkout for 'dbt-data-reliability' repository
+       dbt-version:
         type: string
         required: false
         default: "latest_official"
         description: dbt's version to test with
 
-  workflow_call:
+   workflow_call:
     inputs:
       warehouse-type:
         type: string
@@ -93,6 +94,11 @@ jobs:
         if: inputs.warehouse-type == 'postgres'
         working-directory: ${{ env.TESTS_DIR }}
         run: docker compose up -d postgres
+
+      - name: Start SQL Server
+        if: inputs.warehouse-type == 'sqlserver'
+        working-directory: ${{ env.TESTS_DIR }}
+        run: docker compose -f docker-compose-sqlserver.yml up -d
 
       - name: Start Trino
         if: inputs.warehouse-type == 'trino'
