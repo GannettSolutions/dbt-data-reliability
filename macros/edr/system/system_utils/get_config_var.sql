@@ -129,7 +129,7 @@
 {%- macro sqlserver__get_default_config() -%}
     {% set default_config = elementary.default__get_default_config() %}
     {% do default_config.update({
-      'dbt_artifacts_chunk_size': 1000
+      'dbt_artifacts_chunk_size': 1000,
       'omit_group_by_for_window_aggregations': true
     }) %}
 
