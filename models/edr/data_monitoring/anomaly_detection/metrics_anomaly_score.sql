@@ -67,7 +67,30 @@ metrics_anomaly_score as (
             metric_value is not null
             and training_avg is not null
             and bucket_end >= {{ elementary.edr_timeadd('day', '-7', elementary.edr_date_trunc('day', elementary.edr_current_timestamp())) }}
-    {{ dbt_utils.group_by(15) }}
+
+    -- Explicit GROUP BY required: SQL Server errors on ordinal GROUP BY ("outer reference").
+    group by
+        id,
+        full_table_name,
+        column_name,
+        dimension,
+        dimension_value,
+        metric_name,
+        case
+            when training_stddev is null then null
+            when training_set_size = 1 then null
+            when training_stddev = 0 then 0
+            else (metric_value - training_avg) / training_stddev
+        end,
+        metric_value,
+        bucket_start,
+        bucket_end,
+        training_avg,
+        training_stddev,
+        training_start,
+        training_end,
+        training_set_size
+
     {% if elementary.get_config_var('allow_order_by_in_views') %}
       order by bucket_end desc
     {% endif %}
