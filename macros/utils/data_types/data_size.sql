@@ -24,7 +24,6 @@
 
 
 {% macro sqlserver__get_column_size() %}
-    {# We set this to 4000 to match the NVARCHAR(4000) limit we set earlier #}
     {{ return(4000) }}
 {% endmacro %}
 

@@ -82,7 +82,8 @@
     'fail_on_zero': false,
     'anomaly_exclude_metrics': none,
     'disable_samples_on_pii_tags': false,
-    'pii_tags': ['pii']
+    'pii_tags': ['pii'],
+    'omit_group_by_for_window_aggregations': false
   } %}
   {{- return(default_config) -}}
 {%- endmacro -%}
@@ -127,7 +128,10 @@
 
 {%- macro sqlserver__get_default_config() -%}
     {% set default_config = elementary.default__get_default_config() %}
-    {% do default_config.update({'dbt_artifacts_chunk_size': 1000}) %}
+    {% do default_config.update({
+      'dbt_artifacts_chunk_size': 1000
+      'omit_group_by_for_window_aggregations': true
+    }) %}
 
     {{- return(default_config) -}}
 {%- endmacro -%}

@@ -20,12 +20,10 @@
 
 
 {%- macro sqlserver__get_default_incremental_strategy() -%}
-  {# safest across dbt-sqlserver versions; "merge" support has historically behaved like delete+insert #}
   {% do return("delete+insert") %}
 {%- endmacro -%}
 
 {%- macro duckdb__get_default_incremental_strategy() -%}
-  {# safest across DuckDB versions; merge requires DuckDB >= 1.4.0 #}
   {% do return("delete+insert") %}
 {%- endmacro -%}
 

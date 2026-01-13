@@ -32,7 +32,10 @@ time_window_aggregation as (
         last_value(bucket_end) over (partition by metric_name, full_table_name, column_name order by bucket_start asc rows between unbounded preceding and current row) training_end,
         first_value(bucket_end) over (partition by metric_name, full_table_name, column_name order by bucket_start asc rows between unbounded preceding and current row) as training_start
     from data_monitoring_metrics
-    {{ dbt_utils.group_by(12) }}
+    {% if not elementary.get_config_var('omit_group_by_for_window_aggregations') %}
+      {{ dbt_utils.group_by(12) }}
+    {% endif %}
+
 ),
 
 metrics_anomaly_score as (
@@ -90,8 +93,8 @@ final as (
         training_set_size,
         updated_at,
         case
-            when abs(anomaly_score) > {{ elementary.get_config_var('anomaly_sensitivity') }} then true
-            else false end
+            when abs(anomaly_score) > {{ elementary.get_config_var('anomaly_sensitivity') }} then {{ elementary.boolean(true) }}
+            else {{ elementary.boolean(false) }} end
         as is_anomaly
     from metrics_anomaly_score
 )
