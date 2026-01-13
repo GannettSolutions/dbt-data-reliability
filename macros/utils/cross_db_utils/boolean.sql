@@ -1,4 +1,4 @@
-{% macro elementary.boolean(value) %}
+{% macro boolean(value) %}
   {{ return(adapter.dispatch('boolean', 'elementary')(value)) }}
 {% endmacro %}
 
