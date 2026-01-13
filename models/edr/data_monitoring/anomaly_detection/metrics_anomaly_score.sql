@@ -68,7 +68,9 @@ metrics_anomaly_score as (
             and training_avg is not null
             and bucket_end >= {{ elementary.edr_timeadd('day', '-7', elementary.edr_date_trunc('day', elementary.edr_current_timestamp())) }}
     {{ dbt_utils.group_by(15) }}
-    order by bucket_end desc
+    {% if elementary.get_config_var('allow_order_by_in_views') %}
+      order by bucket_end desc
+    {% endif %}
 
 
 ),

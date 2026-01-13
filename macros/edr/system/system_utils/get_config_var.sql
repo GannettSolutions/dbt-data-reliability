@@ -83,7 +83,8 @@
     'anomaly_exclude_metrics': none,
     'disable_samples_on_pii_tags': false,
     'pii_tags': ['pii'],
-    'omit_group_by_for_window_aggregations': false
+    'omit_group_by_for_window_aggregations': false,
+    'allow_order_by_in_views': true
   } %}
   {{- return(default_config) -}}
 {%- endmacro -%}
@@ -130,7 +131,8 @@
     {% set default_config = elementary.default__get_default_config() %}
     {% do default_config.update({
       'dbt_artifacts_chunk_size': 1000,
-      'omit_group_by_for_window_aggregations': true
+      'omit_group_by_for_window_aggregations': true,
+      'allow_order_by_in_views': false
     }) %}
 
     {{- return(default_config) -}}
