@@ -42,7 +42,7 @@
 
 
 {% macro sqlserver__get_relation_max_name_length(temporary, relation, sql_query) %}
-    {{ return(128) }}
+    {{ return(127) }}
 {% endmacro %}
 
 {% macro duckdb__get_relation_max_name_length(temporary, relation, sql_query) %}
